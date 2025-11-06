@@ -1,0 +1,5 @@
+traccar/logs/
+ntripcaster/logs/
+benthos-io4edge/logs/
+scripts/*.csv
+.mypy_cache

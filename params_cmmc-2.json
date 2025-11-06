@@ -1,0 +1,28 @@
+{
+  "version": "PP-CMMC-Integrationstest-Vito",
+  "parameters": {
+    "ntrip-caster": "www.ntrip.sachsen.de:2101:VRS_3_4G_SN",
+    "ntrip-creds": "SC1N000A:kUPHT8NFRqWnbS",
+    "ntrip-hostname": "www.ntrip.sachsen.de",
+    "gnss-rate": "1",
+    "gnss-dr": "on",
+    "gnss-dynmodel": "automotive",
+    "tacho-k": "130000",
+    "dev2vrp": "-183:0:-169",
+    "dev-alg": "0:0:0",
+    "use-wt": "on",
+    "dev-height": "20",
+    "sleep-mode": "on",
+    "sleep-wakeintv": "600",
+    "fuse-rate": "1",
+    "uwb-server": "off",
+    "loc-srv": "192.168.7.121:8081",
+    "uwb-fw-update": "on",
+    "uwb-gnss-pos": "off",
+    "uwb-auto-reset": "on",
+    "fuse-uwb-th": "5",
+    "fuse-origin": "53.61060179402844:10.028198518773246:0.20732462349104708",
+    "uwb-corr-blob": "AeIBCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBCncKRwiRmAMR5LgjIYT1W0AZXjLnRmJtSUAhf2797TvfKUAqIgogCgUIjgEQbgoECAQQbgoECAcQLAoECAoCAhAACgUIjgEQADICCAASKAgXEAUYiA4gwAQoATAJOAJADEj03AFSBmlvUG5pUFgAYAFoAXABeAMaAggGCngKAgNICL6FARFCFF+6SwlcQBngNaqWTG1JQCHI6PIeGt8pQCojCiEKBAh+EGAKBQi+ARBgCgUIzAEQSgoFCLoBEAIECgoECH4QBjICCAASKAgXEAkYiA4gwAQoATAJOAJADEj03AFSBmlvUG5pUFgAYAFoAXABeAMaAggGCn0KTQgCBdGQAxFIMjweJDZCQBl8Lfk/WmlJQCGht6vnP9cpQCooCiYKBQhTEJoBCgQIWxAHCgQIUBADCgQIUBBgCgQIAgYqEGAKBQgmEKYBMgIIABIoCBcQBRiIDiDABCgBMAk4AkAMSPTcAVIGaW9QbmlQWABgAWgBcAF4AxoCCAYKbgIHCj4Izh8RI6dRHsAGa0AZ3ZeDolhpSUAh9XziTJrXKUAqGgoYCgQINRAYCgQINBAYCgQINBAFCgQINRAFMgICCAgAEigIFxAJGIgOIMAEKAEwCTgCQAxI9NwBUgZpb1BuaVBYAGABaAFwAXgDGgIIBgAAAAAAAAAAAAAAAAAAAw0LdakcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "uwb-motcheck": "0"
+  }
+}

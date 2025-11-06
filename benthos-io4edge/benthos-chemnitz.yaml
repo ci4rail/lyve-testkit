@@ -1,0 +1,495 @@
+logger:
+  level: INFO
+  add_timestamp: true
+
+input:
+  label: "tracelet_udp"
+  tracelet_udp:
+    address: 0.0.0.0:11001
+
+pipeline:
+  processors:
+    - protobuf:
+        operator: to_json
+        message: tracelet.TraceletToServer
+        import_paths: [/config]
+        use_proto_names: true
+    #!bloblang
+    - bloblang: |
+        meta vehicle = this.tracelet_id
+        root = this
+        # convert the uuid bytes to UUIDv4 string format
+        let h   = this.uuid.value.decode("base64").encode("hex").uppercase()
+        root.uuid_str = "%s-%s-%s-%s-%s".format($h.slice(0,8), $h.slice(8,12), $h.slice(12,16), $h.slice(16,20), $h.slice(20,32))
+
+        let u = this.ipv4_address
+        if $u == null || $u == 0 {
+          root.ip_str = "0.0.0.0"
+        } else {
+          root.ip_str = "%d.%d.%d.%d".format($u % 256,  ($u / 256).floor() % 256, ($u / 65536).floor() % 256, ($u / 16777216).floor() % 256)
+        }
+        # ensure that all fields are there (because protobuf does not report field with their default values)
+        root.location.gnss.valid = this.location.gnss.valid | false
+        root.location.gnss.latitude = this.location.gnss.latitude | 0.0
+        root.location.gnss.longitude = this.location.gnss.longitude | 0.0
+        root.location.gnss.altitude = this.location.gnss.altitude | 0.0
+        root.location.gnss.eph = this.location.gnss.eph | 0.0
+        root.location.gnss.epv = this.location.gnss.epv | 0.0
+        root.location.gnss.fix_type = this.location.gnss.fix_type | 0
+        root.location.gnss.head_motion = this.location.gnss.head_motion | 0
+        root.location.gnss.head_vehicle = this.location.gnss.head_vehicle | 0
+        root.location.gnss.head_valid = this.location.gnss.head_valid | 0
+        root.location.gnss.head_precision = this.location.gnss.head_precision | 0.0
+        root.location.gnss.ground_speed = this.location.gnss.ground_speed | 0.0
+
+        root.location.uwb.valid = this.location.uwb.valid | false
+        root.location.uwb.x = this.location.uwb.x | 0.0
+        root.location.uwb.y = this.location.uwb.y | 0.0
+        root.location.uwb.z = this.location.uwb.z | 0.0
+        root.location.uwb.site_id = this.location.uwb.site_id | 0
+        root.location.uwb.location_signature = this.location.uwb.location_signature | 0
+        root.location.uwb.eph = this.location.uwb.eph | 0.0
+        root.location.uwb.fix_type = this.location.uwb.fix_type | 0
+        root.location.uwb.head_motion = this.location.uwb.head_motion | 0
+        root.location.uwb.head_vehicle = this.location.uwb.head_vehicle | 0
+        root.location.uwb.head_valid = this.location.uwb.head_valid | 0
+        root.location.uwb.head_precision = this.location.uwb.head_precision | 0.0
+        root.location.uwb.ground_speed = this.location.uwb.ground_speed | 0.0
+
+        root.location.fused.valid = this.location.fused.valid | false
+        root.location.fused.latitude = this.location.fused.latitude | 0.0
+        root.location.fused.longitude = this.location.fused.longitude | 0.0
+        root.location.fused.altitude = this.location.fused.altitude | 0.0
+        root.location.fused.eph = this.location.fused.eph | 0.0
+        root.location.fused.head_motion = this.location.fused.head_motion | 0
+        root.location.fused.head_vehicle = this.location.fused.head_vehicle | 0
+        root.location.fused.head_valid = this.location.fused.head_valid | 0
+        root.location.fused.head_precision = this.location.fused.head_precision | 0.0
+        root.location.fused.ground_speed = this.location.fused.ground_speed | 0.0
+
+        root.location.direction = this.location.direction | 0
+        root.location.speed = this.location.speed | 0.0
+        root.location.mileage = this.location.mileage | 0
+        root.location.temperature = this.location.temperature | 0.0
+        root.ignition = this.ignition | false
+        root.uuid = this.uuid | 0
+        root.ipv4_address = this.ipv4_address | 0
+
+        if this.metrics != null {
+          let m = this.metrics
+          let g = this.location.gnss
+          let u = this.location.uwb
+          let f = this.location.fused
+
+          let fw_metric_key = "fw___version___" + this.firmware_version | ""
+          let tmp = {
+            $fw_metric_key: 0
+          }
+
+          root.metrics = $m.merge($tmp)
+          root.metrics.health___type___uwb_comm = $m.health___type___uwb_comm | 0
+          root.metrics.health___type___uwb_firmware = $m.health___type___uwb_firmware | 0
+          root.metrics.health___type___uwb_config = $m.health___type___uwb_config | 0
+          root.metrics.health___type___gnss_comm = $m.health___type___gnss_comm | 0
+          root.metrics.health___type___ubx_firmware = $m.health___type___ubx_firmware | 0
+          root.metrics.health___type___ubx_config = $m.health___type___ubx_config | 0
+          root.metrics.health___type___actors_startup = $m.health___type___actors_startup | 0
+          root.metrics.sntp_updates = $m.sntp_updates | 0
+          root.metrics.free_heap_bytes = $m.free_heap_bytes | 0
+          root.metrics.system_time_seconds = $m.system_time_seconds | 0
+          root.metrics.wifi_rssi_dbm = $m.wifi_rssi_dbm | 0
+          root.metrics.wifi_ap = $m.wifi_ap | 0
+          root.metrics.gnss_num_sats___system___gps = $m.gnss_num_sats___system___gps | 0
+          root.metrics.gnss_num_sats___system___glonass = $m.gnss_num_sats___system___glonass | 0
+          root.metrics.gnss_num_sats___system___beidou = $m.gnss_num_sats___system___beidou | 0
+          root.metrics.gnss_num_sats___system___galileo = $m.gnss_num_sats___system___galileo | 0
+          root.metrics.gnss_num_sats___system___qzss = $m.gnss_num_sats___system___qzss | 0
+          root.metrics.gnss_uart_errors___type___hw_fifo = $m.gnss_uart_errors___type___hw_fifo | 0
+          root.metrics.gnss_uart_errors___type___buf_full = $m.gnss_uart_errors___type___buf_full | 0
+          root.metrics.gnss_uart_errors___type___char = $m.gnss_uart_errors___type___char | 0
+          root.metrics.gnss_num_sv = $m.gnss_num_sv | 0
+          root.metrics.gnss_pga___block___rf1 = $m.gnss_pga___block___rf1 | 0
+          root.metrics.gnss_pga___block___rf2 = $m.gnss_pga___block___rf2 | 0
+          root.metrics.ubx_sensor_fusion_status_enum = $m.ubx_sensor_fusion_status_enum | 0
+          root.metrics.ubx_ref_station_id = $m.ubx_ref_station_id | 0
+          root.metrics.ntrip_is_connected = $m.ntrip_is_connected | 0
+          root.metrics.ntrip_transfer_bytes___direction___send = $m.ntrip_transfer_bytes___direction___send | 0
+          root.metrics.ntrip_transfer_bytes___direction___recv = $m.ntrip_transfer_bytes___direction___recv | 0
+          root.metrics.uwb_status_role_enum = $m.uwb_status_role_enum | 0
+          root.metrics.uwb_status_state_enum = $m.uwb_status_state_enum | 0
+          root.metrics.uwb_status_motion_state_enum = $m.uwb_status_motion_state_enum | 0
+          root.metrics.lsi_is_connected = $m.lsi_is_connected | 0
+          root.metrics.lsi_acks_missed = $m.lsi_acks_missed | 0
+          root.metrics.ubx_boot_type_enum = $m.ubx_boot_type_enum | 0
+          root.metrics.ubx_runtime = $m.ubx_runtime | 0
+          root.metrics.ubx_sensor_fusion_detail___type___wt_init = $m.ubx_sensor_fusion_detail___type___wt_init | 0
+          root.metrics.ubx_sensor_fusion_detail___type___mnt_alg = $m.ubx_sensor_fusion_detail___type___mnt_alg | 0
+          root.metrics.ubx_sensor_fusion_detail___type___ins_init = $m.ubx_sensor_fusion_detail___type___ins_init | 0
+          root.metrics.ubx_sensor_fusion_detail___type___imu_init = $m.ubx_sensor_fusion_detail___type___imu_init | 0
+          root.metrics.sensor_fusion_state = $m.sensor_fusion_state | 0
+          root.metrics.uwb_num_sats = $m.uwb_num_sats | 0
+          root.metrics.uwb_sat___type___1_addr = $m.uwb_sat___type___1_addr | 0
+          root.metrics.uwb_sat___type___1_rssi = $m.uwb_sat___type___1_rssi | 0
+          root.metrics.uwb_sat___type___1_nlos = $m.uwb_sat___type___1_nlos | 0
+          root.metrics.uwb_sat___type___2_addr = $m.uwb_sat___type___2_addr | 0
+          root.metrics.uwb_sat___type___2_rssi = $m.uwb_sat___type___2_rssi | 0
+          root.metrics.uwb_sat___type___2_nlos = $m.uwb_sat___type___2_nlos | 0
+          root.metrics.uwb_sat___type___3_addr = $m.uwb_sat___type___3_addr | 0
+          root.metrics.uwb_sat___type___3_rssi = $m.uwb_sat___type___3_rssi | 0
+          root.metrics.uwb_sat___type___3_nlos = $m.uwb_sat___type___3_nlos | 0
+          root.metrics.uwb_sat___type___4_addr = $m.uwb_sat___type___4_addr | 0
+          root.metrics.uwb_sat___type___4_rssi = $m.uwb_sat___type___4_rssi | 0
+          root.metrics.uwb_sat___type___4_nlos = $m.uwb_sat___type___4_nlos | 0
+          root.metrics.uwb_sat___type___5_addr = $m.uwb_sat___type___5_addr | 0
+          root.metrics.uwb_sat___type___5_rssi = $m.uwb_sat___type___5_rssi | 0
+          root.metrics.uwb_sat___type___5_nlos = $m.uwb_sat___type___5_nlos | 0
+          root.metrics.uwb_sat___type___6_addr = $m.uwb_sat___type___6_addr | 0
+          root.metrics.uwb_sat___type___6_rssi = $m.uwb_sat___type___6_rssi | 0
+          root.metrics.uwb_sat___type___6_nlos = $m.uwb_sat___type___6_nlos | 0
+          root.metrics.cpu_load_percent___cpu___0 = $m.cpu_load_percent___cpu___0 | 0
+          root.metrics.cpu_load_percent___cpu___1 = $m.cpu_load_percent___cpu___1 | 0
+          root.metrics.uptime_seconds = $m.uptime_seconds | 0
+          root.metrics.sleep_manager_state = $m.sleep_manager_state | 0
+          root.metrics.last_power_cut_unix_seconds = $m.last_power_cut_unix_seconds | 0
+          root.metrics.reset_count___type___poweron = $m.reset_count___type___poweron | 0
+          root.metrics.reset_count___type___software = $m.reset_count___type___software | 0
+          root.metrics.reset_count___type___panic = $m.reset_count___type___panic | 0
+          root.metrics.reset_count___type___wd = $m.reset_count___type___wd | 0
+          root.metrics.reset_count___type___brownout = $m.reset_count___type___brownout | 0
+          root.metrics.reset_count___type___pwrglitch = $m.reset_count___type___pwrglitch | 0
+          root.metrics.reset_count___type___unknown = $m.reset_count___type___unknown | 0
+          root.metrics.uwb_tacho_speed = $u.tacho_speed | 0
+
+          # synthetic metrics from payload
+          root.metrics.gnss_lat = $g.latitude | 0
+          root.metrics.gnss_lon = $g.longitude | 0
+          root.metrics.gnss_fix_type_enum = $g.fix_type | 0
+          root.metrics.gnss_eph_meters = $g.eph | 0
+          root.metrics.gnss_lat_degrees = $g.latitude | 0
+          root.metrics.gnss_lon_degrees = $g.longitude | 0
+          root.metrics.gnss_ground_speed = $g.ground_speed | 0
+          root.metrics.gnss_heading_valid = match $g.head_valid{
+            2 => 1
+            3 => 1
+            _ => 0
+          }
+          root.metrics.gnss_heading_vehicle = $g.head_vehicle | 0
+          root.metrics.gnss_heading_motion = $g.head_motion | 0
+          root.metrics.gnss_heading_head_precision = $g.head_precision | 0
+          root.metrics.ubx_temperature_degrees = this.location.temperature | 0
+          root.metrics.uwb_is_valid = match $u.valid{
+            true => 1
+            _ => 0
+          }
+          root.metrics.uwb_x_meters = $u.x | 0
+          root.metrics.uwb_y_meters = $u.y | 0
+          root.metrics.uwb_z_meters = $u.z | 0
+          root.metrics.uwb_eph_meters = $u.eph | 0
+          root.metrics.uwb_fix_type_enum = $u.fix_type | 0
+          root.metrics.uwb_head_motion = $u.head_motion | 0
+          root.metrics.uwb_head_vehicle = $u.head_vehicle | 0
+          root.metrics.uwb_head_valid = $u.head_valid | 0
+          root.metrics.uwb_head_precision = $u.head_precision | 0
+          root.metrics.uwb_speed_meters_per_second = $u.ground_speed | 0
+
+          root.metrics.fused_is_valid = $f.valid | 0
+          root.metrics.fused_lat = $f.latitude | 0
+          root.metrics.fused_lon = $f.longitude | 0
+          root.metrics.fused_eph = $f.eph | 0
+          root.metrics.fused_head_motion = $f.head_motion | 0
+          root.metrics.fused_head_vehicle = $f.head_vehicle | 0
+          root.metrics.fused_head_valid = $f.head_valid | 0
+          root.metrics.fused_head_precision = $f.head_precision | 0
+          root.metrics.fused_speed = $f.ground_speed | 0
+
+          root.metrics.speed_meters_per_second = this.location.speed | 0
+          root.metrics.mileage_meters = this.location.mileage * 1000 | 0
+
+          root.metrics.ignition_state = match this.ignition{
+            true => 1
+            _ => 0
+          }
+          
+        }
+
+    - log:
+        level: INFO
+        message: "decoded this: ${! this }"
+
+output:
+  broker:
+    pattern: fan_out
+    # async: true
+    outputs:
+      - drop_on:
+          error: true
+          output:
+            label: "fused_to_traccar"
+            # Feed traccar with https://www.traccar.org/osmand/ protocol
+            http_client:
+              url: ${! this.url }
+              verb: GET
+            #stdout: {}
+            processors:
+              - bloblang: |
+                  let url = "http://traccar:5055/?id=" + @vehicle
+                  let url = $url + "&timestamp=" + this.delivery_ts
+                  let url = $url + "&lat=" + (this.location.gnss.latitude | 0.0).string() + "&lon=" + (this.location.gnss.longitude | 0.0).string() + "&accuracy=" + (this.location.gnss.eph | 0.0).string()
+
+                  let url = if (this.location.fused.head_valid | 0) > 0 {
+                    $url + "&heading=" + (this.location.fused.head_motion | 0).string()
+                  }
+                  let url = $url + "&speed=" + (this.location.fused.ground_speed | 0.0).string()
+
+                  let valid = match (this.location.fused.valid | false) {
+                    true => "true"
+                    _ => "false"
+                  }
+                  let url = $url + "&valid=" + $valid
+                  root = null
+                  root.url = $url
+              - log:
+                  level: INFO
+                  message: "FUSED url: ${! this.url}"
+      - drop_on:
+          error: true
+          output:
+            label: "gnss_to_traccar"
+            # Feed traccar with https://www.traccar.org/osmand/ protocol
+            http_client:
+              url: ${! this.url }
+              verb: GET
+            #stdout: {}
+            processors:
+              - bloblang: |
+                  let url = "http://traccar:5055/?id=" + @vehicle + "-GNSS"
+                  let url = $url + "&timestamp=" + this.delivery_ts
+                  let url = $url + "&lat=" + (this.location.gnss.latitude | 0.0).string() + "&lon=" + (this.location.gnss.longitude | 0.0).string() + "&accuracy=" + (this.location.gnss.eph | 0.0).string()
+
+                  let url = if (this.location.gnss.head_valid | 0) > 0 {
+                    $url + "&heading=" + (this.location.gnss.head_motion | 0).string()
+                  }
+                  let url = $url + "&speed=" + (this.location.gnss.ground_speed | 0.0).string()
+
+                  let valid = match this.location.gnss.valid {
+                    true => "true"
+                    _ => "false"
+                  }
+                  let url = $url + "&valid=" + $valid
+                  root = null
+                  root.url = $url
+              - log:
+                  level: INFO
+                  message: "GNSS url: ${! this.url}"
+      - drop_on:
+          error: true
+          output:
+            label: "uwb_to_traccar"
+            # Feed traccar with https://www.traccar.org/osmand/ protocol
+            http_client:
+              url: ${! this.url }
+              verb: GET
+            #stdout: {}
+            processors:
+              # Use branch to retain the original message, and add the uwb_wgs field if all processors succeed
+              - branch:
+                  # Set the X/Y input to the coordinate processor
+                  request_map: |-
+                    let uwbpos = {
+                      "X": this.location.uwb.x,
+                      "Y": this.location.uwb.y,
+                    }
+                    let dummy = {
+                      "X": 0.0,
+                      "Y": 0.0,
+                    }
+                    root = if this.location.uwb.valid {
+                      $uwbpos
+                    } else {
+                      $dummy
+                    }
+                  processors:
+                    # Transform the X/Y input to WGS
+                    - coordinate:
+                        org_lat: 53.61060179402844   # todo
+                        org_lon: 10.028198518773246  # todo
+                        org_azimuth: 0.20732462349104708  # todo
+                        operation: 2d_to_wgs
+                  result_map: |-
+                    root.location.uwb_wgs = this
+
+              - bloblang: |
+                  let url = "http://traccar:5055/?id=" + @vehicle + "-UWB"
+                  let url = $url + "&timestamp=" + this.delivery_ts
+                  let url = $url + "&lat=" + (this.location.uwb_wgs.Lat | 0.0).string()
+                  let url = $url + "&lon=" + (this.location.uwb_wgs.Lon | 0.0).string()
+                  let url = $url + "&accuracy=" + (this.location.uwb.eph | 0.0).string()
+                  let url = if (this.location.uwb.head_valid | 0) > 0 {
+                    $url + "&heading=" + (this.location.uwb.head_motion | 0).string()
+                  }
+                  let url = $url + "&speed=" + (this.location.uwb.ground_speed | 0.0).string()
+                  let valid = match this.location.uwb.valid {
+                    true => "true"
+                    _ => "false"
+                  }
+                  let url = $url + "&valid=" + $valid
+                  root = null
+                  root.url = $url
+              - log:
+                  level: INFO
+                  message: "UWB url: ${! this.url}"
+
+      # # Forward data to Easyplan running on the same host
+      # - drop_on:
+      #     error: true
+      #     output:
+      #       label: "easyplan_io4edge"
+      #       socket_client_io4edge:
+      #         address: 192.168.23.27:11002
+      #       processors:
+      #         #!bloblang
+      #         - bloblang: |
+      #             root = this.without("metrics").without("ip_str").without("uuid_str")
+      #         - try:
+      #             - protobuf:
+      #                 operator: from_json
+      #                 message: tracelet.TraceletToServer
+      #                 import_paths: [/config]
+      #         - catch:
+      #             - log:
+      #                 level: ERROR
+      #                 message: "Protobuf encoding failed due to: ${!error()}"
+
+      # - drop_on:
+      #     error: true
+      #     output:
+      #       label: "client_io4edge"
+      #       socket_client_io4edge:
+      #         address: 172.17.0.1:11003
+      #       processors:
+      #         #!bloblang
+      #         - bloblang: |
+      #             root = this.without("metrics").without("ip_str").without("uuid_str")
+      #         - try:
+      #             - protobuf:
+      #                 operator: from_json
+      #                 message: tracelet.TraceletToServer
+      #                 import_paths: [/config]
+      #         - catch:
+      #             - log:
+      #                 level: ERROR
+      #                 message: "Protobuf encoding failed due to: ${!error()}"
+
+      - drop_on:
+          error: true
+          output:
+            label: "file_output"
+            json_writer:
+              path: "/root/logs/"
+
+      # Write raw data into time series database
+      - drop_on:
+          error: true
+          output:
+            label: "timeseries"
+            sql_insert:
+              driver: "postgres"
+              dsn: "postgres://user:password@postgresdb:5432/raw_pos?sslmode=disable"
+              table: pos_cmmc
+              # batching:
+              #   count: 20
+              #   period: 15s
+              init_files: ["/config/createpostable.sql"]
+              columns:
+                - devicetime
+                - servertime
+                - tracelet_id
+                - ignition
+                - gnss_valid
+                - gnss_latitude
+                - gnss_longitude
+                - gnss_altitude
+                - gnss_eph
+                - gnss_epv
+                - gnss_fixtype
+                - gnss_head_motion
+                - gnss_head_vehicle
+                - gnss_head_valid
+                - gnss_speed
+                - uwb_valid
+                - uwb_x
+                - uwb_y
+                - uwb_z
+                - uwb_siteid
+                - uwb_location_signature
+                - uwb_eph
+                - uwb_fixtype
+                - uwb_head_motion
+                - uwb_head_vehicle
+                - uwb_head_valid
+                - uwb_speed
+                - speed
+                - mileage
+              args_mapping: |
+                root = [
+                  this.delivery_ts,
+                  now(),
+                  this.tracelet_id,
+                  this.ignition,
+                  this.location.gnss.valid,
+                  this.location.gnss.latitude,
+                  this.location.gnss.longitude,
+                  this.location.gnss.altitude,
+                  this.location.gnss.eph,
+                  this.location.gnss.epv,
+                  this.location.gnss.fix_type,
+                  this.location.gnss.head_motion,
+                  this.location.gnss.head_vehicle,
+                  this.location.gnss.head_valid,
+                  this.location.gnss.ground_speed,
+                  this.location.uwb.valid,
+                  this.location.uwb.x,
+                  this.location.uwb.y,
+                  this.location.uwb.z,
+                  this.location.uwb.site_id,
+                  this.location.uwb.location_signature.string(),
+                  this.location.uwb.eph,
+                  this.location.uwb.fix_type,
+                  this.location.uwb.head_motion,
+                  this.location.uwb.head_vehicle,
+                  this.location.uwb.head_valid,
+                  this.location.uwb.ground_speed,
+                  this.location.speed,
+                  this.location.mileage,
+                ]
+
+      # Forward data to prometheus
+      - drop_on:
+          error: true
+          output:
+            label: "metrics"
+            prometheus_output:
+              url: "http://prometheus:9090/api/v1/write"
+              username: ""
+              password: ""
+              # batching:
+              #   count: 200
+              #   period: 10s
+            processors:
+              #!bloblang
+              - bloblang: |
+                  if this.metrics != null {
+                    let m = this.metrics
+                    root = {}
+                    root.ts = this.delivery_ts.format_timestamp_unix_milli()
+                    root.metrics = this.metrics
+                    root.labels = {}
+                    root.labels.origin_prometheus = "lyve-demo"
+                    root.labels.device = this.tracelet_id
+                    root.labels.job = "tracelet"
+                  } else {
+                    root = deleted()
+                  }
+              - log:
+                  level: DEBUG
+                  message: "prom input: ${! this }"
