@@ -339,46 +339,26 @@ output:
                   level: INFO
                   message: "UWB url: ${! this.url}"
 
-      # # Forward data to Easyplan running on the same host
-      # - drop_on:
-      #     error: true
-      #     output:
-      #       label: "easyplan_io4edge"
-      #       socket_client_io4edge:
-      #         address: 192.168.23.27:11002
-      #       processors:
-      #         #!bloblang
-      #         - bloblang: |
-      #             root = this.without("metrics").without("ip_str").without("uuid_str")
-      #         - try:
-      #             - protobuf:
-      #                 operator: from_json
-      #                 message: tracelet.TraceletToServer
-      #                 import_paths: [/config]
-      #         - catch:
-      #             - log:
-      #                 level: ERROR
-      #                 message: "Protobuf encoding failed due to: ${!error()}"
-
-      # - drop_on:
-      #     error: true
-      #     output:
-      #       label: "client_io4edge"
-      #       socket_client_io4edge:
-      #         address: 172.17.0.1:11003
-      #       processors:
-      #         #!bloblang
-      #         - bloblang: |
-      #             root = this.without("metrics").without("ip_str").without("uuid_str")
-      #         - try:
-      #             - protobuf:
-      #                 operator: from_json
-      #                 message: tracelet.TraceletToServer
-      #                 import_paths: [/config]
-      #         - catch:
-      #             - log:
-      #                 level: ERROR
-      #                 message: "Protobuf encoding failed due to: ${!error()}"
+      # Forward data to Easyplan running on the same host
+      - drop_on:
+          error: true
+          output:
+            label: "easyplan_io4edge"
+            socket_client_io4edge:
+              address: 192.168.23.27:11002
+            processors:
+              #!bloblang
+              - bloblang: |
+                  root = this.without("metrics").without("ip_str").without("uuid_str")
+              - try:
+                  - protobuf:
+                      operator: from_json
+                      message: tracelet.TraceletToServer
+                      import_paths: [/config]
+              - catch:
+                  - log:
+                      level: ERROR
+                      message: "Protobuf encoding failed due to: ${!error()}"
 
       - drop_on:
           error: true
