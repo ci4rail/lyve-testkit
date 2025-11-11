@@ -1,5 +1,12 @@
 # LYVE TestKit
 
+In the file benthos-io4edge/benthos-chemnitz.yaml, search for "MyIP:Port" and replace it with your Easyplan address:
+* If Easyplan Host is another machine use the IP adress of this machine.
+* If Easyplan runs your machine and your machine is a Linux host replace "MyIP" with `172.17.0.1`
+* If Easyplan runs your machine and your machine is a Mac host replace "MyIP" with `docker.for.mac.localhost`
+* If Easyplan runs your machine and your machine is a Windows host replace "MyIP" with `host.docker.internal`
+
+Then start the Docker Compose either using Docker Desktop or by running: `$ docker compose up`.
 
 # Initial setup
 
@@ -55,7 +62,15 @@ Identifier=TRACELET-1
 ## Configure units
 Settings->Server->Speed Unit=km/h
 
-# Provision Grafana Dashboard
+# View Grafana Dashboard
+
+1. Open your web browser and navigate to [http://localhost:3000](http://localhost:3000).  
+2. Log in with the following credentials:  
+   - **Username:** `admin`  
+   - **Password:** `ci4rail`  
+3. Go to **Dashboards** and select the one you want to view.  
+
+> **Note:** If this is the first time the Grafana container is started (or its volume has been deleted), click on **New** and import `dashboard-single-tracelet.json`.
 
 ```
 

@@ -26,8 +26,7 @@ services:
         - ./traccar/logs:/opt/traccar/logs
 
   benthos:
-    # image: ci4rail/redpanda-connect-kyt:v1.2.0
-    image: ci4rail/redpanda-connect-kyt:vtest
+    image: ci4rail/redpanda-connect-kyt:v2.1.0-rc.1
     depends_on:
       - traccar
     command:
