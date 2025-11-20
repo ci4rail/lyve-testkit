@@ -361,7 +361,7 @@ output:
                       message: "Protobuf encoding failed due to: ${!error()}"
                   - log:
                       level: INFO
-                      message: "Send to ${MyIP}:${MyPort}"
+                      message: "Send to ${EASYPLAN_IP}:${EASYPLAN_PORT}"
 
       - drop_on:
           error: true
