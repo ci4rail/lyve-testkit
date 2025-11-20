@@ -1,0 +1,27 @@
+{
+  "version": "Twingo",
+  "parameters": {
+    "ntrip-caster": "195.200.70.199:2101:VRS_3_4G_SN",
+    "ntrip-creds": "24_cirail02:tz34_5kw+nc853-dj",
+    "gnss-rate": "1",
+    "gnss-dr": "on",
+    "gnss-dynmodel": "automotive",
+    "tacho-k": "130000",
+    "dev2vrp": "-171:0:-123",
+    "dev-alg": "0:0:0",
+    "use-wt": "on",
+    "dev-height": "150",
+    "sleep-mode": "on",
+    "sleep-wakeintv": "600",
+    "fuse-rate": "1",
+    "uwb-server": "on",
+    "loc-srv": "10.179.155.102:11001",
+    "uwb-fw-update": "off",
+    "uwb-gnss-pos": "on",
+    "uwb-auto-reset": "on",
+    "fuse-uwb-th": "5",
+    "fuse-origin": "50.85456167496589:12.936004101931074:111.83618954170703",
+    "uwb-corr-blob": "AeIBCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBCncKRwiRmAMR5LgjIYT1W0AZXjLnRmJtSUAhf2797TvfKUAqIgogCgUIjgEQbgoECAQQbgoECAcQLAoECAoCAhAACgUIjgEQADICCAASKAgXEAUYiA4gwAQoATAJOAJADEj03AFSBmlvUG5pUFgAYAFoAXABeAMaAggGCngKAgNICL6FARFCFF+6SwlcQBngNaqWTG1JQCHI6PIeGt8pQCojCiEKBAh+EGAKBQi+ARBgCgUIzAEQSgoFCLoBEAIECgoECH4QBjICCAASKAgXEAkYiA4gwAQoATAJOAJADEj03AFSBmlvUG5pUFgAYAFoAXABeAMaAggGCn0KTQgCBdGQAxFIMjweJDZCQBl8Lfk/WmlJQCGht6vnP9cpQCooCiYKBQhTEJoBCgQIWxAHCgQIUBADCgQIUBBgCgQIAgYqEGAKBQgmEKYBMgIIABIoCBcQBRiIDiDABCgBMAk4AkAMSPTcAVIGaW9QbmlQWABgAWgBcAF4AxoCCAYKbgIHCj4Izh8RI6dRHsAGa0AZ3ZeDolhpSUAh9XziTJrXKUAqGgoYCgQINRAYCgQINBAYCgQINBAFCgQINRAFMgICCAgAEigIFxAJGIgOIMAEKAEwCTgCQAxI9NwBUgZpb1BuaVBYAGABaAFwAXgDGgIIBgAAAAAAAAAAAAAAAAAAAw0LdakcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "uwb-motcheck": "0"
+  }
+}

@@ -2790,7 +2790,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "uwb_sat"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "hex0x"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -2798,7 +2811,7 @@
         "x": 0,
         "y": 88
       },
-      "id": 63,
+      "id": 65,
       "interval": "1s",
       "options": {
         "colorMode": "value",
@@ -4743,8 +4756,8 @@
     "list": [
       {
         "current": {
-          "text": "F9KN3",
-          "value": "F9KN3"
+          "text": "4VZ0M",
+          "value": "4VZ0M"
         },
         "datasource": {
           "type": "prometheus",
@@ -4766,12 +4779,12 @@
     ]
   },
   "time": {
-    "from": "now-15m",
-    "to": "now"
+    "from": "2025-11-07T14:36:25.358Z",
+    "to": "2025-11-07T14:38:33.666Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Single Tracelet Details",
   "uid": "e93e17e8-e16a-4f07-b662-d29077e5adf42",
-  "version": 7
+  "version": 10
 }
