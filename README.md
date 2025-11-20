@@ -1,10 +1,32 @@
 # LYVE TestKit
 
-In the file benthos-io4edge/benthos-chemnitz.yaml, search for "MyIP:Port" and replace it with your Easyplan address:
+In the file docker-compose.yaml set the Easyplan address and port and set the UWB Origin:
+``` yaml
+  benthos:
+    image: ci4rail/redpanda-connect-kyt:v2.1.0-rc.1
+    depends_on:
+      - traccar
+    command:
+      - "-c"
+      - "/config/benthos-chemnitz.yaml"
+    restart: always
+    environment:
+      EASYPLAN_IP: <EasyplanIP>
+      EASYPLAN_PORT: <EasyplanPort>
+      ORIGIN_LAT: 50.85456167496589
+      ORIGIN_LON: 12.936004101931074
+      ORIGIN_AZI: 111.83618954170703
+    ports:
+      - 11001:11001/udp
+      - 4195:4195
+    volumes:
+        - ./benthos-io4edge:/config:ro
+        - ./benthos-io4edge/logs:/root/logs:rw
+```
 * If Easyplan Host is another machine use the IP adress of this machine.
-* If Easyplan runs your machine and your machine is a Linux host replace "MyIP" with `172.17.0.1`
-* If Easyplan runs your machine and your machine is a Mac host replace "MyIP" with `docker.for.mac.localhost`
-* If Easyplan runs your machine and your machine is a Windows host replace "MyIP" with `host.docker.internal`
+* If Easyplan runs your machine and your machine is a Linux host set `EASYPLAN_IP` to `172.17.0.1`
+* If Easyplan runs your machine and your machine is a Mac host set `EASYPLAN_IP` to `docker.for.mac.localhost`
+* If Easyplan runs your machine and your machine is a Windows host set `EASYPLAN_IP` to `host.docker.internal`
 
 Then start the Docker Compose either using Docker Desktop or by running: `$ docker compose up`.
 
@@ -27,6 +49,11 @@ CREATE DATABASE raw_pos;
 Then restart benthos
 ```
 docker-compose restart benthos
+```
+
+In the folder tracelet_parameter you will find a collection of parameter for the tracelet. Use the io4edge-cli tool to apply a set of parameter:
+```
+io4edge-cli -i <tracelet-ip>:443 load-parameterset pos <parameter-json>
 ```
 
 # Login into traccar

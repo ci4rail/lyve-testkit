@@ -33,6 +33,12 @@ services:
       - "-c"
       - "/config/benthos-chemnitz.yaml"
     restart: always
+    environment:
+      EASYPLAN_IP: <EasyplanIP>
+      EASYPLAN_PORT: <EasyplanPort>
+      ORIGIN_LAT: 50.85456167496589
+      ORIGIN_LON: 12.936004101931074
+      ORIGIN_AZI: 111.83618954170703
     ports:
       - 11001:11001/udp
       - 4195:4195

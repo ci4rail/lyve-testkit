@@ -311,9 +311,9 @@ output:
                   processors:
                     # Transform the X/Y input to WGS
                     - coordinate:
-                        org_lat: 50.85456167496589
-                        org_lon: 12.936004101931074
-                        org_azimuth: 111.83618954170703
+                        org_lat: ${ORIGIN_LAT}
+                        org_lon: ${ORIGIN_LON}
+                        org_azimuth: ${ORIGIN_AZI}
                         operation: 2d_to_wgs
                   result_map: |-
                     root.location.uwb_wgs = this
@@ -339,26 +339,29 @@ output:
                   level: INFO
                   message: "UWB url: ${! this.url}"
 
-      # # Forward data to Easyplan running on the same host
-      # - drop_on:
-      #     error: true
-      #     output:
-      #       label: "easyplan_io4edge"
-      #       socket_client_io4edge:
-      #         address: MyIP:Port
-      #       processors:
-      #         #!bloblang
-      #         - bloblang: |
-      #             root = this.without("metrics").without("ip_str").without("uuid_str")
-      #         - try:
-      #             - protobuf:
-      #                 operator: from_json
-      #                 message: tracelet.TraceletToServer
-      #                 import_paths: [/config]
-      #         - catch:
-      #             - log:
-      #                 level: ERROR
-      #                 message: "Protobuf encoding failed due to: ${!error()}"
+      # Forward data to Easyplan running on the same host
+      - drop_on:
+          error: true
+          output:
+            label: "easyplan_io4edge"
+            socket_client_io4edge:
+              address: ${EASYPLAN_IP}:${EASYPLAN_PORT}
+            processors:
+              #!bloblang
+              - bloblang: |
+                  root = this.without("metrics").without("ip_str").without("uuid_str")
+              - try:
+                  - protobuf:
+                      operator: from_json
+                      message: tracelet.TraceletToServer
+                      import_paths: [/config]
+              - catch:
+                  - log:
+                      level: ERROR
+                      message: "Protobuf encoding failed due to: ${!error()}"
+                  - log:
+                      level: INFO
+                      message: "Send to ${MyIP}:${MyPort}"
 
       - drop_on:
           error: true
