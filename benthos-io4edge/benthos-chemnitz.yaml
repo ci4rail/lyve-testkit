@@ -203,7 +203,7 @@ pipeline:
           root.metrics.fused_speed = $f.ground_speed | 0
 
           root.metrics.speed_meters_per_second = this.location.speed | 0
-          root.metrics.mileage_meters = this.location.mileage * 1000 | 0
+          root.metrics.mileage_mm = $m.mileage_mm | 0
 
           root.metrics.ignition_state = match this.ignition{
             true => 1

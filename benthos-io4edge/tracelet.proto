@@ -270,9 +270,9 @@ message TraceletMetrics {
   int64 ntrip_transfer_bytes___direction___send = 36;     // Bytes sent to NTRIP Caster
   int64 ntrip_transfer_bytes___direction___recv = 37;     // Bytes received from NTRIP Caster
 
-  int64 uwb_status_role_enum = 38;                        // UWB Role from Status Report (0-4) 3=TAG  TODO: needed?
-  int64 uwb_status_state_enum = 39;                       // UWB State from Status Report(0-4) TODO: needed?
-  int64 uwb_status_motion_state_enum = 40;                // UWB Motion Sensor State from Status Report (0..2), 1=MOVE TODO: needed?
+  // int64 uwb_status_role_enum = 38;                        // UWB Role from Status Report (0-4) 3=TAG  
+  // int64 uwb_status_state_enum = 39;                       // UWB State from Status Report(0-4) 
+  // int64 uwb_status_motion_state_enum = 40;                // UWB Motion Sensor State from Status Report (0..2), 1=MOVE 
   
   int64 lsi_is_connected = 41;                            // Localization Server Interface gets ACKs from server
   int64 lsi_acks_missed = 42;                             // Localization Server Interface number of missed ACKs from server
@@ -313,6 +313,7 @@ message TraceletMetrics {
   int64 uptime_seconds = 71;                            // Uptime in seconds since last reboot
   int64 sleep_manager_state = 72;                       // Sleep Manager State (0=UNDEF, 1=DISABLED, 2=NORMAL, 3=WANT_SLEEP, 4=WANT_SLEEP_CONFIRM, 5=PREPARE_SLEEP, 6=SLEEP, 7=WAKE)
   int64 last_power_cut_unix_seconds = 73;               // Last power cut time in seconds since 1.1.1970 UTC
+  int64 mileage_mm = 74;                                // Traveled distance in millimeters
 
   int64 reset_count___type___poweron = 80;              // Number of power-on resets
   int64 reset_count___type___software = 81;             // Number of software resets
@@ -323,4 +324,5 @@ message TraceletMetrics {
   int64 reset_count___type___unknown = 86;              // Number of unknown (other) resets
 
   double uwb_tacho_speed = 87;                            // Tacho speed from UWB subsystem in m/s (always positive)
+  int64 uwb_pan_id = 88;                                  // UWB PAN ID from Status Report
 } 

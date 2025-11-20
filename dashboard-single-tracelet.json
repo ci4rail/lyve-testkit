@@ -2548,7 +2548,6 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2599,7 +2598,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "degree"
         },
         "overrides": []
       },
@@ -2609,14 +2609,14 @@
         "x": 12,
         "y": 83
       },
-      "id": 12,
+      "id": 7,
       "interval": "5s",
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": false
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -2631,14 +2631,38 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "editorMode": "builder",
-          "expr": "speed_meters_per_second{job=\"tracelet\", device=\"$tracelet\"}",
-          "legendFormat": "__auto",
+          "editorMode": "code",
+          "expr": "uwb_head_vehicle{job=\"tracelet\", device=\"$tracelet\"}",
+          "legendFormat": "vehicle",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "uwb_head_motion{job=\"tracelet\", device=\"$tracelet\"}",
+          "hide": false,
+          "legendFormat": "motion",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "uwb_head_valid{job=\"tracelet\", device=\"$tracelet\"} * 100",
+          "hide": false,
+          "legendFormat": "valid",
+          "range": true,
+          "refId": "C"
         }
       ],
-      "title": "Vehicle Speed (m/s)",
+      "title": "Heading",
       "type": "timeseries"
     },
     {
@@ -2815,6 +2839,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2866,24 +2891,24 @@
               }
             ]
           },
-          "unit": "degree"
+          "unit": "velocityms"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 4,
         "w": 12,
         "x": 12,
         "y": 91
       },
-      "id": 7,
+      "id": 57,
       "interval": "5s",
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -2899,37 +2924,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "uwb_head_vehicle{job=\"tracelet\", device=\"$tracelet\"}",
-          "legendFormat": "vehicle",
+          "expr": "uwb_tacho_speed{job=\"tracelet\", device=\"$tracelet\"}",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "expr": "uwb_head_motion{job=\"tracelet\", device=\"$tracelet\"}",
-          "hide": false,
-          "legendFormat": "motion",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "expr": "uwb_head_valid{job=\"tracelet\", device=\"$tracelet\"} * 100",
-          "hide": false,
-          "legendFormat": "valid",
-          "range": true,
-          "refId": "C"
         }
       ],
-      "title": "Heading",
+      "title": "UWB Tacho Speed",
       "type": "timeseries"
     },
     {
@@ -3032,6 +3033,123 @@
         }
       ],
       "title": "Satlets in view - RSSI",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "UWB position is valid (True/False)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "Invalid"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "Valid"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 95
+      },
+      "id": 13,
+      "interval": "5s",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "builder",
+          "expr": "uwb_is_valid{job=\"tracelet\", device=\"$tracelet\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Position validity",
       "type": "timeseries"
     },
     {
@@ -3152,6 +3270,19 @@
       "type": "timeseries"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 103
+      },
+      "id": 10,
+      "panels": [],
+      "title": "Tacho",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -3207,135 +3338,17 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "velocityms"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 12,
-        "x": 12,
-        "y": 99
-      },
-      "id": 57,
-      "interval": "5s",
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.6.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "expr": "uwb_tacho_speed{job=\"tracelet\", device=\"$tracelet\"}",
-          "legendFormat": "{{instance}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "UWB Tacho Speed",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "description": "UWB position is valid (True/False)",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "stepAfter",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "red",
-                  "index": 0,
-                  "text": "Invalid"
-                },
-                "1": {
-                  "color": "green",
-                  "index": 1,
-                  "text": "Valid"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "max": 1,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
           }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 103
+        "x": 0,
+        "y": 104
       },
-      "id": 13,
+      "id": 12,
       "interval": "5s",
       "options": {
         "legend": {
@@ -3358,27 +3371,14 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "uwb_is_valid{job=\"tracelet\", device=\"$tracelet\"}",
+          "expr": "speed_meters_per_second{job=\"tracelet\", device=\"$tracelet\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Position validity",
+      "title": "Vehicle Speed (m/s)",
       "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 107
-      },
-      "id": 10,
-      "panels": [],
-      "title": "Tacho",
-      "type": "row"
     },
     {
       "datasource": {
@@ -3391,6 +3391,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -3404,10 +3405,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 4,
+        "h": 8,
+        "w": 10,
         "x": 12,
-        "y": 108
+        "y": 104
       },
       "id": 33,
       "interval": "5s",
@@ -3436,13 +3437,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "mileage_meters{job=\"tracelet\", device=\"$tracelet\"} / 1000",
+          "expr": "mileage_mm{job=\"tracelet\", device=\"$tracelet\"} / 1000",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Milage (km)",
+      "title": "Milage (m)",
       "type": "stat"
     },
     {
@@ -4742,8 +4743,8 @@
     "list": [
       {
         "current": {
-          "text": "4VZ0M",
-          "value": "4VZ0M"
+          "text": "F9KN3",
+          "value": "F9KN3"
         },
         "datasource": {
           "type": "prometheus",
@@ -4765,12 +4766,12 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Single Tracelet Details",
   "uid": "e93e17e8-e16a-4f07-b662-d29077e5adf42",
-  "version": 4
+  "version": 7
 }
