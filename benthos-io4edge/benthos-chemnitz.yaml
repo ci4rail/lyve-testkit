@@ -158,7 +158,7 @@ pipeline:
           root.metrics.reset_count___type___brownout = $m.reset_count___type___brownout | 0
           root.metrics.reset_count___type___pwrglitch = $m.reset_count___type___pwrglitch | 0
           root.metrics.reset_count___type___unknown = $m.reset_count___type___unknown | 0
-          root.metrics.uwb_tacho_speed = $u.tacho_speed | 0
+          root.metrics.uwb_tacho_speed = $u.ground_speed | 0
 
           # synthetic metrics from payload
           root.metrics.gnss_lat = $g.latitude | 0
@@ -221,123 +221,123 @@ output:
     pattern: fan_out
     # async: true
     outputs:
-      - drop_on:
-          error: true
-          output:
-            label: "fused_to_traccar"
-            # Feed traccar with https://www.traccar.org/osmand/ protocol
-            http_client:
-              url: ${! this.url }
-              verb: GET
-            #stdout: {}
-            processors:
-              - bloblang: |
-                  let url = "http://traccar:5055/?id=" + @vehicle
-                  let url = $url + "&timestamp=" + this.delivery_ts
-                  let url = $url + "&lat=" + (this.location.gnss.latitude | 0.0).string() + "&lon=" + (this.location.gnss.longitude | 0.0).string() + "&accuracy=" + (this.location.gnss.eph | 0.0).string()
+      # - drop_on:
+      #     error: true
+      #     output:
+      #       label: "fused_to_traccar"
+      #       # Feed traccar with https://www.traccar.org/osmand/ protocol
+      #       http_client:
+      #         url: ${! this.url }
+      #         verb: GET
+      #       #stdout: {}
+      #       processors:
+      #         - bloblang: |
+      #             let url = "http://traccar:5055/?id=" + @vehicle
+      #             let url = $url + "&timestamp=" + this.delivery_ts
+      #             let url = $url + "&lat=" + (this.location.gnss.latitude | 0.0).string() + "&lon=" + (this.location.gnss.longitude | 0.0).string() + "&accuracy=" + (this.location.gnss.eph | 0.0).string()
 
-                  let url = if (this.location.fused.head_valid | 0) > 0 {
-                    $url + "&heading=" + (this.location.fused.head_motion | 0).string()
-                  }
-                  let url = $url + "&speed=" + (this.location.fused.ground_speed | 0.0).string()
+      #             let url = if (this.location.fused.head_valid | 0) > 0 {
+      #               $url + "&heading=" + (this.location.fused.head_motion | 0).string()
+      #             }
+      #             let url = $url + "&speed=" + (this.location.fused.ground_speed | 0.0).string()
 
-                  let valid = match (this.location.fused.valid | false) {
-                    true => "true"
-                    _ => "false"
-                  }
-                  let url = $url + "&valid=" + $valid
-                  root = null
-                  root.url = $url
-              - log:
-                  level: INFO
-                  message: "FUSED url: ${! this.url}"
-      - drop_on:
-          error: true
-          output:
-            label: "gnss_to_traccar"
-            # Feed traccar with https://www.traccar.org/osmand/ protocol
-            http_client:
-              url: ${! this.url }
-              verb: GET
-            #stdout: {}
-            processors:
-              - bloblang: |
-                  let url = "http://traccar:5055/?id=" + @vehicle + "-GNSS"
-                  let url = $url + "&timestamp=" + this.delivery_ts
-                  let url = $url + "&lat=" + (this.location.gnss.latitude | 0.0).string() + "&lon=" + (this.location.gnss.longitude | 0.0).string() + "&accuracy=" + (this.location.gnss.eph | 0.0).string()
+      #             let valid = match (this.location.fused.valid | false) {
+      #               true => "true"
+      #               _ => "false"
+      #             }
+      #             let url = $url + "&valid=" + $valid
+      #             root = null
+      #             root.url = $url
+      #         - log:
+      #             level: INFO
+      #             message: "FUSED url: ${! this.url}"
+      # - drop_on:
+      #     error: true
+      #     output:
+      #       label: "gnss_to_traccar"
+      #       # Feed traccar with https://www.traccar.org/osmand/ protocol
+      #       http_client:
+      #         url: ${! this.url }
+      #         verb: GET
+      #       #stdout: {}
+      #       processors:
+      #         - bloblang: |
+      #             let url = "http://traccar:5055/?id=" + @vehicle + "-GNSS"
+      #             let url = $url + "&timestamp=" + this.delivery_ts
+      #             let url = $url + "&lat=" + (this.location.gnss.latitude | 0.0).string() + "&lon=" + (this.location.gnss.longitude | 0.0).string() + "&accuracy=" + (this.location.gnss.eph | 0.0).string()
 
-                  let url = if (this.location.gnss.head_valid | 0) > 0 {
-                    $url + "&heading=" + (this.location.gnss.head_motion | 0).string()
-                  }
-                  let url = $url + "&speed=" + (this.location.gnss.ground_speed | 0.0).string()
+      #             let url = if (this.location.gnss.head_valid | 0) > 0 {
+      #               $url + "&heading=" + (this.location.gnss.head_motion | 0).string()
+      #             }
+      #             let url = $url + "&speed=" + (this.location.gnss.ground_speed | 0.0).string()
 
-                  let valid = match this.location.gnss.valid {
-                    true => "true"
-                    _ => "false"
-                  }
-                  let url = $url + "&valid=" + $valid
-                  root = null
-                  root.url = $url
-              - log:
-                  level: INFO
-                  message: "GNSS url: ${! this.url}"
-      - drop_on:
-          error: true
-          output:
-            label: "uwb_to_traccar"
-            # Feed traccar with https://www.traccar.org/osmand/ protocol
-            http_client:
-              url: ${! this.url }
-              verb: GET
-            #stdout: {}
-            processors:
-              # Use branch to retain the original message, and add the uwb_wgs field if all processors succeed
-              - branch:
-                  # Set the X/Y input to the coordinate processor
-                  request_map: |-
-                    let uwbpos = {
-                      "X": this.location.uwb.x,
-                      "Y": this.location.uwb.y,
-                    }
-                    let dummy = {
-                      "X": 0.0,
-                      "Y": 0.0,
-                    }
-                    root = if this.location.uwb.valid {
-                      $uwbpos
-                    } else {
-                      $dummy
-                    }
-                  processors:
-                    # Transform the X/Y input to WGS
-                    - coordinate:
-                        org_lat: ${ORIGIN_LAT}
-                        org_lon: ${ORIGIN_LON}
-                        org_azimuth: ${ORIGIN_AZI}
-                        operation: 2d_to_wgs
-                  result_map: |-
-                    root.location.uwb_wgs = this
+      #             let valid = match this.location.gnss.valid {
+      #               true => "true"
+      #               _ => "false"
+      #             }
+      #             let url = $url + "&valid=" + $valid
+      #             root = null
+      #             root.url = $url
+      #         - log:
+      #             level: INFO
+      #             message: "GNSS url: ${! this.url}"
+      # - drop_on:
+      #     error: true
+      #     output:
+      #       label: "uwb_to_traccar"
+      #       # Feed traccar with https://www.traccar.org/osmand/ protocol
+      #       http_client:
+      #         url: ${! this.url }
+      #         verb: GET
+      #       #stdout: {}
+      #       processors:
+      #         # Use branch to retain the original message, and add the uwb_wgs field if all processors succeed
+      #         - branch:
+      #             # Set the X/Y input to the coordinate processor
+      #             request_map: |-
+      #               let uwbpos = {
+      #                 "X": this.location.uwb.x,
+      #                 "Y": this.location.uwb.y,
+      #               }
+      #               let dummy = {
+      #                 "X": 0.0,
+      #                 "Y": 0.0,
+      #               }
+      #               root = if this.location.uwb.valid {
+      #                 $uwbpos
+      #               } else {
+      #                 $dummy
+      #               }
+      #             processors:
+      #               # Transform the X/Y input to WGS
+      #               - coordinate:
+      #                   org_lat: ${ORIGIN_LAT}
+      #                   org_lon: ${ORIGIN_LON}
+      #                   org_azimuth: ${ORIGIN_AZI}
+      #                   operation: 2d_to_wgs
+      #             result_map: |-
+      #               root.location.uwb_wgs = this
 
-              - bloblang: |
-                  let url = "http://traccar:5055/?id=" + @vehicle + "-UWB"
-                  let url = $url + "&timestamp=" + this.delivery_ts
-                  let url = $url + "&lat=" + (this.location.uwb_wgs.Lat | 0.0).string()
-                  let url = $url + "&lon=" + (this.location.uwb_wgs.Lon | 0.0).string()
-                  let url = $url + "&accuracy=" + (this.location.uwb.eph | 0.0).string()
-                  let url = if (this.location.uwb.head_valid | 0) > 0 {
-                    $url + "&heading=" + (this.location.uwb.head_motion | 0).string()
-                  }
-                  let url = $url + "&speed=" + (this.location.uwb.ground_speed | 0.0).string()
-                  let valid = match this.location.uwb.valid {
-                    true => "true"
-                    _ => "false"
-                  }
-                  let url = $url + "&valid=" + $valid
-                  root = null
-                  root.url = $url
-              - log:
-                  level: INFO
-                  message: "UWB url: ${! this.url}"
+      #         - bloblang: |
+      #             let url = "http://traccar:5055/?id=" + @vehicle + "-UWB"
+      #             let url = $url + "&timestamp=" + this.delivery_ts
+      #             let url = $url + "&lat=" + (this.location.uwb_wgs.Lat | 0.0).string()
+      #             let url = $url + "&lon=" + (this.location.uwb_wgs.Lon | 0.0).string()
+      #             let url = $url + "&accuracy=" + (this.location.uwb.eph | 0.0).string()
+      #             let url = if (this.location.uwb.head_valid | 0) > 0 {
+      #               $url + "&heading=" + (this.location.uwb.head_motion | 0).string()
+      #             }
+      #             let url = $url + "&speed=" + (this.location.uwb.ground_speed | 0.0).string()
+      #             let valid = match this.location.uwb.valid {
+      #               true => "true"
+      #               _ => "false"
+      #             }
+      #             let url = $url + "&valid=" + $valid
+      #             root = null
+      #             root.url = $url
+      #         - log:
+      #             level: INFO
+      #            message: "UWB url: ${! this.url}"
 
       # Forward data to Easyplan running on the same host
       - drop_on:
