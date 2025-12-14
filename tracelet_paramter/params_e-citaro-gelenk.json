@@ -1,0 +1,28 @@
+{
+  "version": "e-citaro-gelenk-1.0",
+  "parameters": {
+    "ntrip-caster": "sapos.geonord-od.de:2101:RTCM4G",
+    "ntrip-creds": "gast:gast",
+    "ntrip-hostname": "sapos.geonord-od.de",
+    "gnss-rate": "1",
+    "gnss-dr": "off",
+    "gnss-dynmodel": "automotive",
+    "tacho-k": "4000",
+    "dev2vrp": "-735:14:-334",
+    "dev-alg": "0:0:0",
+    "use-wt": "on",
+    "dev-height": "330",
+    "sleep-mode": "on",
+    "sleep-wakeintv": "1200",
+    "fuse-rate": "1",
+    "uwb-server": "off",
+    "loc-srv": "192.168.7.203:11001",
+    "uwb-fw-update": "on",
+    "uwb-gnss-pos": "on",
+    "uwb-auto-reset": "on",
+    "fuse-uwb-th": "5",
+    "site-origins": "A5F6:53.610601794028:10.028198518:0.207324623",
+    "uwb-corr-blob": "AXUAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBCnMKQwj2ywIRAFjG/pyJyj8ZlB0YMyjOSkAhfdpHCXAOJEAqIgogCgYIxwIQ3AIKBgiLAxDpAQoGCKIEEN0CAgIKBgjiBBD8ARIoCBcQBRiIDiDABCgBMAk4AkAMSPTcAVIGaW9QbmlQWABgAWgBcAF4AxoCCAYAAAAAAAAAA8/zd40IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "uwb-motcheck": "0"
+  }
+}
