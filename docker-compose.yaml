@@ -34,8 +34,8 @@ services:
       - "/config/benthos-chemnitz.yaml"
     restart: always
     environment:
-      EASYPLAN_IP: <EasyplanIP>
-      EASYPLAN_PORT: <EasyplanPort>
+      EASYPLAN_IP: host.docker.internal
+      EASYPLAN_PORT: 11002
       ORIGIN_LAT: 50.85456167496589
       ORIGIN_LON: 12.936004101931074
       ORIGIN_AZI: 111.83618954170703
