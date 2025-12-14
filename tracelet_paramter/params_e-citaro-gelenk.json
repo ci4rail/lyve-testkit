@@ -12,7 +12,7 @@
     "dev-alg": "0:0:0",
     "use-wt": "on",
     "dev-height": "330",
-    "sleep-mode": "on",
+    "sleep-mode": "off",
     "sleep-wakeintv": "1200",
     "fuse-rate": "1",
     "uwb-server": "off",

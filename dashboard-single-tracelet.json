@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "liveNow": true,
   "panels": [
@@ -183,7 +183,7 @@
         "y": 5
       },
       "id": 1,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -313,7 +313,7 @@
         "y": 5
       },
       "id": 22,
-      "interval": "10s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -411,7 +411,7 @@
         "y": 9
       },
       "id": 42,
-      "interval": "10s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -524,7 +524,7 @@
         "y": 13
       },
       "id": 4,
-      "interval": "10s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -770,7 +770,7 @@
         "y": 18
       },
       "id": 46,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -904,7 +904,7 @@
         "y": 25
       },
       "id": 23,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -1139,7 +1139,7 @@
         "y": 29
       },
       "id": 9,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -1655,7 +1655,7 @@
         "y": 41
       },
       "id": 8,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -1846,7 +1846,7 @@
         "y": 50
       },
       "id": 58,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -2100,7 +2100,7 @@
         "y": 67
       },
       "id": 19,
-      "interval": "5",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -2315,7 +2315,7 @@
         "y": 73
       },
       "id": 20,
-      "interval": "3s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -2610,7 +2610,7 @@
         "y": 83
       },
       "id": 7,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -2915,7 +2915,7 @@
         "y": 91
       },
       "id": 57,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -3134,7 +3134,7 @@
         "y": 95
       },
       "id": 13,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -3362,7 +3362,7 @@
         "y": 104
       },
       "id": 12,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -3424,7 +3424,7 @@
         "y": 104
       },
       "id": 33,
-      "interval": "5s",
+      "interval": "1s",
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -4756,8 +4756,8 @@
     "list": [
       {
         "current": {
-          "text": "4VZ0M",
-          "value": "4VZ0M"
+          "text": "F9KN3",
+          "value": "F9KN3"
         },
         "datasource": {
           "type": "prometheus",
@@ -4779,12 +4779,12 @@
     ]
   },
   "time": {
-    "from": "2025-11-07T14:36:25.358Z",
-    "to": "2025-11-07T14:38:33.666Z"
+    "from": "2025-12-10T10:14:13.693Z",
+    "to": "2025-12-10T12:57:11.060Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Single Tracelet Details",
   "uid": "e93e17e8-e16a-4f07-b662-d29077e5adf42",
-  "version": 10
+  "version": 4
 }
