@@ -1,0 +1,26 @@
+{
+  "version": "Ci4RailOffice-1.1",
+  "parameters": {
+    "gnss-rate": "1",
+    "gnss-dr": "off",
+    "gnss-dynmodel": "automotive",
+    "tacho-k": "4000",
+    "dev2vrp": "0:0:0",
+    "dev-alg": "0:0:0",
+    "use-wt": "on",
+    "dev-height": "50",
+    "sleep-mode": "off",
+    "sleep-wakeintv": "600",
+    "fuse-rate": "1",
+    "uwb-server": "on",
+    "loc-srv": "192.168.23.107:11001",
+    "uwb-fw-update": "on",
+    "uwb-gnss-pos": "on",
+    "uwb-auto-reset": "on",
+    "fuse-uwb-th": "5",
+    "site-origins": "c799:49.4308808:11.0709017:78.1843123",
+    "uwb-corr-blob": "AXMAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBCnEKQQiZjwMRTDb0xcuLU0AZ1Tc9Gie3SEAh+RAiPE0kJkAqIAoeCgQIHhAqCgQIKRAqCgQIKRAnCgQINBACAiEKBAg0ECoSKAgXEAUYiA4gwAQoATAJOAJADEj03AFSBmlvUG5pUFgAYAFoAXABeAMaAggGAAAAAAAAAAAAAzj31DAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "uwb-motcheck": "0",
+    "gnss-automntalg": "off"
+  }
+}
