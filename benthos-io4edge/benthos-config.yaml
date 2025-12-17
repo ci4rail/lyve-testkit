@@ -349,7 +349,7 @@ output:
             processors:
               #!bloblang
               - bloblang: |
-                  root = this.without("ip_str").without("uuid_str")
+                  root = this.without("metrics").without("ip_str").without("uuid_str")
               - try:
                   - protobuf:
                       operator: from_json
