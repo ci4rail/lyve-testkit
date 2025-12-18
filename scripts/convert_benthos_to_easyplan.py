@@ -23,7 +23,83 @@ def iso_to_epoch_ms(ts: Optional[str]) -> Optional[int]:
         dt = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(timezone.utc)
     except ValueError:
         return None
-    return int(dt.timestamp() * 1000)
+    ms = int(dt.timestamp() * 1000)
+    # Some logs contain placeholder epoch timestamps (1970-01-01...).
+    # Treat them as missing to avoid creating "1970" chunks/files.
+    if ms <= 0:
+        return None
+    return ms
+
+
+def parse_time_arg(value: Optional[str]) -> Optional[int]:
+    """Parse a CLI time argument into epoch milliseconds.
+
+    Supports:
+    - ISO 8601 strings (e.g. 2025-12-17T13:37:29Z or with offset)
+    - epoch milliseconds (integer)
+    """
+    if value is None or value == "":
+        return None
+    v = value.strip()
+    if v.isdigit():
+        try:
+            return int(v)
+        except ValueError:
+            return None
+
+    try:
+        dt = datetime.fromisoformat(v.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+    # If the string has no timezone info, interpret it as local time.
+    if dt.tzinfo is None:
+        local_tz = datetime.now().astimezone().tzinfo
+        dt = dt.replace(tzinfo=local_tz)
+
+    return int(dt.astimezone(timezone.utc).timestamp() * 1000)
+
+
+def filter_entries_by_time_range(
+    raw_entries: List[Dict[str, Any]],
+    start_ms: Optional[int],
+    end_ms: Optional[int],
+) -> List[Dict[str, Any]]:
+    if start_ms is None and end_ms is None:
+        return raw_entries
+
+    filtered: List[Dict[str, Any]] = []
+    for entry in raw_entries:
+        ts_ms = iso_to_epoch_ms((entry or {}).get("delivery_ts"))
+        if ts_ms is None:
+            continue
+        if start_ms is not None and ts_ms < start_ms:
+            continue
+        if end_ms is not None and ts_ms > end_ms:
+            continue
+        filtered.append(entry)
+    return filtered
+
+
+def epoch_ms_to_filename_local(ms: Optional[int]) -> str:
+    if ms is None:
+        return "na"
+    dt = datetime.fromtimestamp(ms / 1000).astimezone()
+    return dt.strftime("%Y%m%d_%H%M%S")
+
+
+def chunk_time_range_ms(chunk: Dict[str, Any]) -> tuple[Optional[int], Optional[int]]:
+    positions = chunk.get("positions") or {}
+    timestamps: List[int] = []
+    for pos_list in positions.values():
+        for pos in pos_list or []:
+            ts = (pos or {}).get("timeStamp")
+            if isinstance(ts, int):
+                timestamps.append(ts)
+
+    if not timestamps:
+        return None, None
+    return min(timestamps), max(timestamps)
 
 
 def build_position(entry: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -131,13 +207,40 @@ def main() -> None:
         default=10,
         help="Chunk length in minutes (<=0 disables chunking).",
     )
+    parser.add_argument(
+        "--from",
+        dest="from_ts",
+        help=(
+            "Start time (inclusive). ISO8601 (e.g. 2025-12-17T13:00:00Z or 2025-12-17T13:00:00+01:00); "
+            "if no timezone is given, local time is assumed. Also accepts epoch ms."
+        ),
+    )
+    parser.add_argument(
+        "--to",
+        dest="to_ts",
+        help=(
+            "End time (inclusive). ISO8601 (e.g. 2025-12-17T14:00:00Z or 2025-12-17T14:00:00+01:00); "
+            "if no timezone is given, local time is assumed. Also accepts epoch ms."
+        ),
+    )
     args = parser.parse_args()
 
     input_path = Path(args.input)
     with input_path.open("r", encoding="utf-8") as f:
         raw_entries = json.load(f)
 
+    start_ms = parse_time_arg(args.from_ts)
+    end_ms = parse_time_arg(args.to_ts)
+    if start_ms is not None and end_ms is not None and start_ms > end_ms:
+        parser.error("--from must be <= --to")
+
+    raw_entries = filter_entries_by_time_range(raw_entries, start_ms, end_ms)
+
     chunks = convert_entries(raw_entries, args.chunk_minutes)
+
+    # If a time range was requested, always include start/end in the output filename,
+    # even when only a single chunk is produced.
+    force_time_suffix = start_ms is not None or end_ms is not None
 
     if args.output:
         output_path = Path(args.output)
@@ -146,12 +249,15 @@ def main() -> None:
         stem = output_path.stem
         parent = output_path.parent
 
-        if len(chunks) == 1:
+        if len(chunks) == 1 and not force_time_suffix:
             with output_path.open("w", encoding="utf-8") as f:
                 json.dump(chunks[0], f, indent=2)
         else:
-            for idx, chunk in enumerate(chunks, start=1):
-                part_path = parent / f"{stem}_part{idx:02d}{suffix}"
+            for chunk in chunks:
+                chunk_start_ms, chunk_end_ms = chunk_time_range_ms(chunk)
+                start_s = epoch_ms_to_filename_local(chunk_start_ms)
+                end_s = epoch_ms_to_filename_local(chunk_end_ms)
+                part_path = parent / f"{stem}_{start_s}-{end_s}{suffix}"
                 with part_path.open("w", encoding="utf-8") as f:
                     json.dump(chunk, f, indent=2)
     else:
