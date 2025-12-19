@@ -99,5 +99,26 @@ Settings->Server->Speed Unit=km/h
 
 > **Note:** If this is the first time the Grafana container is started (or its volume has been deleted), click on **New** and import `dashboard-single-tracelet.json`.
 
-```
+# Log Files
+
+Benthos starts an output task that writes every tracelet message into a json (Path: benthos-io4edge/logs).
+
+## Convert Benthos Logs to Easyplan JSON
+
+The log files can be converted to easyplan jsons with the script script/convert_benthos_to_easyplan.py.
+
+### Usage
+
+python3 convert_benthos_to_easyplan.py [-h] [-o OUTPUT] [--chunk-minutes CHUNK_MINUTES] [--from FROM_TS] [--to TO_TS] input
+
+#### positional arguments:
+* input: Path to Benthos log JSON file.
+
+#### options:
+* -h, --help: show help message and exit
+* -o OUTPUT, --output OUTPUT: Output path for Easyplan JSON (defaults to stdout).
+* --chunk-minutes CHUNK_MINUTES: Chunk length in minutes (<=0 disables chunking).
+* --from FROM_TS: Start time (inclusive). ISO8601 (e.g. 2025-12-17T13:00:00Z or 2025-12-17T13:00:00+01:00); if no timezone is given, local time is assumed. Also accepts epoch ms.
+* --to TO_TS: End time (inclusive). ISO8601 (e.g. 2025-12-17T14:00:00Z or 2025-12-17T14:00:00+01:00); if no timezone is given, local time is assumed. Also accepts epoch ms.
+
 
