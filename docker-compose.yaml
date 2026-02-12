@@ -73,8 +73,30 @@ services:
       - ./grafana:/etc/grafana/provisioning/datasources
       - grafana_data:/var/lib/grafana
 
+  alloy:
+    image: grafana/alloy:v1.2.1
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/store
+      - /config/config.alloy
+    working_dir: /config
+    volumes:
+      - ./alloy:/config
+      - alloy-data:/store
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+      - /run/udev/data:/host/run/udev/data:ro
+    # enable only for debugging
+    # ports:
+    #   - "12345:12345"
+    restart: unless-stopped
+    pid: host
+    network_mode: host
+
 
 volumes:
   grafana_data:
   prom_data:
   postgres-data:
+  alloy-data:

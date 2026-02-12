@@ -1,5 +1,9 @@
 # LYVE TestKit
 
+## Initial setup
+
+### Configure Benthos
+
 In the file docker-compose.yaml set the Easyplan address and port and set the UWB Origin:
 ``` yaml
   benthos:
@@ -30,66 +34,54 @@ In the file docker-compose.yaml set the Easyplan address and port and set the UW
 
 Then start the Docker Compose either using Docker Desktop or by running: `$ docker compose up`.
 
-# Initial setup
+> **IMPORTANT** It is recommended to start Easyplan Remote Positioning before starting the docker setup, as benthos will backpressure tracelet messages if any output is not reachable.
 
-Start all containers with docker compose.
-
-Install psql
-```
-sudo apt install postgresql-client
-```
-and create db
-
-```
-psql -d "postgres" -h localhost -U user
-
-CREATE DATABASE raw_pos;
-```
-
-Then restart benthos
-```
-docker-compose restart benthos
-```
+### Configure Tracelet
 
 In the folder tracelet_parameter you will find a collection of parameter for the tracelet. Use the io4edge-cli tool to apply a set of parameter:
 ```
 io4edge-cli -i <tracelet-ip>:443 load-parameterset pos <parameter-json>
 ```
 
-# Login into traccar
+### Add Gatelet Scrape Target
 
+Replace the example addresses in `alloy/targets.yaml` with your targets for scraping.
+
+> **Note** If your setup does not include a gatelet, you can skip this step.
+
+### Login into traccar
+
+Connect to `http://localhost:8082` and register an admin user on first login.
 
 ```
-http://localhost:8082
-
-# Register admin user on first login
 Name: admin
 EMail: admin@admin.de
 Password: admin
-
-# Then login with these credentials
 ```
+Then login with these credentials.
 
-# Register devices
+#### Register devices in Traccar
 
 In case device-id in tracelet is set to `TRACELET-1`:
 
-## UWB Device
+* UWB Device
 Name=TRACELET-1-UWB
 Identifier=TRACELET-1-UWB
 
-## GNSS Device
+* GNSS Device
 Name=TRACELET-1-GNSS
 Identifier=TRACELET-1-GNSS
 
-## FUSED Device
+* FUSED Device
 Name=TRACELET-1
 Identifier=TRACELET-1
 
-## Configure units
+> **IMPORTANT** If the sending tracelet is not registered in traccar, benthos will backpressure the messages and the position data will not be sent to Easyplan either.
+
+#### Configure units
 Settings->Server->Speed Unit=km/h
 
-# View Grafana Dashboard
+### View Grafana Dashboard
 
 1. Open your web browser and navigate to [http://localhost:3000](http://localhost:3000).  
 2. Log in with the following credentials:  
