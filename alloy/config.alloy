@@ -1,0 +1,48 @@
+prometheus.exporter.self "alloy" {}
+
+prometheus.scrape "scraper" {
+    targets    = concat(
+        prometheus.exporter.self.alloy.targets,
+    )
+    scrape_interval = "60s"
+    forward_to = [prometheus.relabel.project.receiver]
+}
+
+discovery.file "targets" {
+  files = ["/config/targets.yaml"]
+}
+
+prometheus.scrape "gateletscraper" {
+    targets    = discovery.file.targets.targets
+    scrape_interval = "15s"
+    forward_to = [prometheus.relabel.instancefromhost.receiver]
+    job_name = "gatelet"
+}
+
+prometheus.relabel "instancefromhost" {
+    rule {
+        source_labels = ["instance"]
+        regex = "(.+)"
+        replacement = constants.hostname
+        target_label = "instance"
+    }
+    forward_to = [prometheus.relabel.project.receiver]
+}
+
+prometheus.relabel "project" {
+    rule {
+        replacement = "LYVE-TestKit"
+        target_label = "project"
+    }
+    forward_to = [prometheus.remote_write.d1.receiver]
+}
+
+prometheus.remote_write "d1" {
+    endpoint {
+        url = "http://localhost:9090/api/v1/write"
+        basic_auth {
+            username = ""
+            password = ""
+        }
+    }
+}
