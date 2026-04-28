@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
-      POSTGRES_DB: db
+      POSTGRES_DB: traccardb
     ports:
       - 5432:5432
     volumes:
@@ -29,6 +29,7 @@ services:
     image: ci4rail/redpanda-connect-kyt:v2.1.0-rc.1
     depends_on:
       - traccar
+      - postgresdb
     command:
       - "-c"
       - "/config/benthos-config.yaml"

@@ -180,6 +180,9 @@ message TraceletToServer {
     // Vehicle Mileage in [km]
     int32 mileage = 5;
 
+    // Vehicle Mileage in [mm]
+    int64 mileage_mm = 9;
+    
     // Current Tracelet Temperature in [°C]
     double temperature = 6;
 
@@ -313,7 +316,7 @@ message TraceletMetrics {
   int64 uptime_seconds = 71;                            // Uptime in seconds since last reboot
   int64 sleep_manager_state = 72;                       // Sleep Manager State (0=UNDEF, 1=DISABLED, 2=NORMAL, 3=WANT_SLEEP, 4=WANT_SLEEP_CONFIRM, 5=PREPARE_SLEEP, 6=SLEEP, 7=WAKE)
   int64 last_power_cut_unix_seconds = 73;               // Last power cut time in seconds since 1.1.1970 UTC
-  int64 mileage_mm = 74;                                // Traveled distance in millimeters
+  int64 mileage_mm = 74;                                     // Traveled distance in millimeters
 
   int64 reset_count___type___poweron = 80;              // Number of power-on resets
   int64 reset_count___type___software = 81;             // Number of software resets

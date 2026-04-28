@@ -81,6 +81,47 @@ Identifier=TRACELET-1
 #### Configure units
 Settings->Server->Speed Unit=km/h
 
+### Create Postgres Database
+
+#### On Linux Commandline
+
+Start all docker containers with docker compose.
+
+Install psql
+```
+sudo apt install postgresql-client
+```
+and create db
+
+```
+psql -d "postgres" -h localhost -U user
+
+CREATE DATABASE posdb;
+```
+
+#### On Windows or Mac
+
+1. Install DBeaver: https://dbeaver.io/download/
+2. Start all docker containers with docker compose.
+3. Start DBeaver
+![DBeaver](assets/Screenshot%20from%202026-04-23%2014-53-13.png)
+4. Create Database Connection
+![Create New Database Connection](assets/Screenshot%20from%202026-04-23%2014-57-42.png)
+5. Select PostgresSQL and click on "Next >"
+![Select PostgresSQL](assets/Screenshot%20from%202026-04-23%2014-59-11.png)
+6. Configure Connection Settings:
+* Host: localhost
+* Port: 5432
+* Username: user
+* Password: password
+* Check "Show all databases"
+![Connection Settings](assets/Screenshot%20from%202026-04-24%2007-50-30.png)
+7. Create Database posdb
+![Create Database](assets/Screenshot%20from%202026-04-28%2008-05-47.png)
+![Create Database posdb](assets/Screenshot%20from%202026-04-28%2008-06-02.png)
+8. Restart Docker Compose
+
+
 ### View Grafana Dashboard
 
 1. Open your web browser and navigate to [http://localhost:3000](http://localhost:3000).  
