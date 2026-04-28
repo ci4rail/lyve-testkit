@@ -115,9 +115,9 @@ pipeline:
           root.metrics.ntrip_is_connected = $m.ntrip_is_connected | 0
           root.metrics.ntrip_transfer_bytes___direction___send = $m.ntrip_transfer_bytes___direction___send | 0
           root.metrics.ntrip_transfer_bytes___direction___recv = $m.ntrip_transfer_bytes___direction___recv | 0
-          root.metrics.uwb_status_role_enum = $m.uwb_status_role_enum | 0
-          root.metrics.uwb_status_state_enum = $m.uwb_status_state_enum | 0
-          root.metrics.uwb_status_motion_state_enum = $m.uwb_status_motion_state_enum | 0
+          # root.metrics.uwb_status_role_enum = $m.uwb_status_role_enum | 0
+          # root.metrics.uwb_status_state_enum = $m.uwb_status_state_enum | 0
+          # root.metrics.uwb_status_motion_state_enum = $m.uwb_status_motion_state_enum | 0
           root.metrics.lsi_is_connected = $m.lsi_is_connected | 0
           root.metrics.lsi_acks_missed = $m.lsi_acks_missed | 0
           root.metrics.ubx_boot_type_enum = $m.ubx_boot_type_enum | 0
@@ -158,7 +158,8 @@ pipeline:
           root.metrics.reset_count___type___brownout = $m.reset_count___type___brownout | 0
           root.metrics.reset_count___type___pwrglitch = $m.reset_count___type___pwrglitch | 0
           root.metrics.reset_count___type___unknown = $m.reset_count___type___unknown | 0
-          root.metrics.uwb_tacho_speed = $u.ground_speed | 0
+          root.metrics.uwb_tacho_speed = $m.uwb_tacho_speed | 0
+          root.metrics.uwb_pan_id = $m.uwb_pan_id | 0
 
           # synthetic metrics from payload
           root.metrics.gnss_lat = $g.latitude | 0
@@ -369,6 +370,258 @@ output:
             label: "file_output"
             json_writer:
               path: "/root/logs/"
+
+      # Write raw data into time series database
+      - drop_on:
+          error: true
+          output:
+            label: "timeseries"
+            sql_insert:
+              driver: "postgres"
+              dsn: "postgres://user:password@postgresdb:5432/posdb?sslmode=disable"
+              table: rawpos
+              init_files: ["/config/createpostable.sql"]
+              columns:
+                - devicetime
+                - servertime
+                - tracelet_id
+                - ignition
+                - firmware_version
+                - uuid_str
+                - ip_str
+                - gnss_valid
+                - gnss_latitude
+                - gnss_longitude
+                - gnss_altitude
+                - gnss_eph
+                - gnss_epv
+                - gnss_fixtype
+                - gnss_head_motion
+                - gnss_head_vehicle
+                - gnss_head_valid
+                - gnss_head_precision
+                - gnss_speed
+                - uwb_valid
+                - uwb_x
+                - uwb_y
+                - uwb_z
+                - uwb_siteid
+                - uwb_location_signature
+                - uwb_eph
+                - uwb_fixtype
+                - uwb_head_motion
+                - uwb_head_vehicle
+                - uwb_head_valid
+                - uwb_head_precision
+                - uwb_speed
+                - fused_valid
+                - fused_latitude
+                - fused_longitude
+                - fused_altitude
+                - fused_eph
+                - fused_head_motion
+                - fused_head_vehicle
+                - fused_head_valid
+                - fused_head_precision
+                - fused_speed
+                - direction
+                - speed
+                - mileage
+                - temperature
+                - metrics_valid
+                - metric__health_uwb_comm
+                - metric__health_uwb_firmware
+                - metric__health_uwb_config
+                - metric__health_gnss_comm
+                - metric__health_ubx_firmware
+                - metric__health_ubx_config
+                - metric__health_actors_startup
+                - metric__sntp_updates
+                - metric__free_heap_bytes
+                - metric__system_time_seconds
+                - metric__wifi_rssi_dbm
+                - metric__wifi_ap
+                - metric__gnss_num_sats_gps
+                - metric__gnss_num_sats_glonass
+                - metric__gnss_num_sats_beidou
+                - metric__gnss_num_sats_galileo
+                - metric__gnss_num_sats_qzss
+                - metric__gnss_uart_errors_hw_fifo
+                - metric__gnss_uart_errors_buf_full
+                - metric__gnss_uart_errors_char
+                - metric__gnss_num_sv
+                - metric__gnss_pga1
+                - metric__gnss_pga2
+                - metric__ubx_sensor_fusion_status
+                - metric__ubx_ref_station_id
+                - metric__ntrip_connected
+                - metric__ntrip_send
+                - metric__ntrip_recv
+                - metric__lsi_connected
+                - metric__lsi_acks_missed
+                - metric__ubx_boot_type
+                - metric__ubx_runtime
+                - metric__ubx_sensor_fusion_wt_init
+                - metric__ubx_sensor_fusion_mnt_alg
+                - metric__ubx_sensor_fusion_ins_init
+                - metric__ubx_sensor_fusion_imu_init
+                - metric__sensor_fusion_state
+                - metric__uwb_num_sats
+                - metric__uwb_sat_1_addr
+                - metric__uwb_sat_1_rssi
+                - metric__uwb_sat_1_nlos
+                - metric__uwb_sat_2_addr
+                - metric__uwb_sat_2_rssi
+                - metric__uwb_sat_2_nlos
+                - metric__uwb_sat_3_addr
+                - metric__uwb_sat_3_rssi
+                - metric__uwb_sat_3_nlos
+                - metric__uwb_sat_4_addr
+                - metric__uwb_sat_4_rssi
+                - metric__uwb_sat_4_nlos
+                - metric__uwb_sat_5_addr
+                - metric__uwb_sat_5_rssi
+                - metric__uwb_sat_5_nlos
+                - metric__uwb_sat_6_addr
+                - metric__uwb_sat_6_rssi
+                - metric__uwb_sat_6_nlos
+                - metric__cpu_load_percent_cpu_0
+                - metric__cpu_load_percent_cpu_1
+                - metric__uptime_seconds
+                - metric__sleep_manager_state
+                - metric__last_power_cut_unix_seconds
+                - metric__mileage_mm
+                - metric__reset_count_poweron
+                - metric__reset_count_software
+                - metric__reset_count_panic
+                - metric__reset_count_wd
+                - metric__reset_count_brownout
+                - metric__reset_count_pwrglitch
+                - metric__reset_count_unknown
+                - metric__uwb_tacho_speed
+                - metric__uwb_pan_id
+              args_mapping: |
+                root = [
+                  this.delivery_ts,
+                  now(),
+                  this.tracelet_id,
+                  this.ignition,
+                  this.firmware_version | "",
+                  this.uuid_str | "",
+                  this.ip_str | "",
+                  this.location.gnss.valid | false,
+                  this.location.gnss.latitude | 0.0,
+                  this.location.gnss.longitude | 0.0,
+                  this.location.gnss.altitude | 0.0,
+                  this.location.gnss.eph | 0.0,
+                  this.location.gnss.epv | 0.0,
+                  this.location.gnss.fix_type | 0,
+                  this.location.gnss.head_motion | 0.0,
+                  this.location.gnss.head_vehicle | 0.0,
+                  this.location.gnss.head_valid | 0,
+                  this.location.gnss.head_precision | 0.0,
+                  this.location.gnss.ground_speed | 0.0,
+                  this.location.uwb.valid | false,
+                  this.location.uwb.x | 0.0,
+                  this.location.uwb.y | 0.0,
+                  this.location.uwb.z | 0.0,
+                  this.location.uwb.site_id | 0,
+                  (this.location.uwb.location_signature | 0).string(),
+                  this.location.uwb.eph | 0.0,
+                  this.location.uwb.fix_type | 0,
+                  this.location.uwb.head_motion | 0.0,
+                  this.location.uwb.head_vehicle | 0.0,
+                  this.location.uwb.head_valid | 0,
+                  this.location.uwb.head_precision | 0.0,
+                  this.location.uwb.ground_speed | 0.0,
+                  this.location.fused.valid | false,
+                  this.location.fused.latitude | 0.0,
+                  this.location.fused.longitude | 0.0,
+                  this.location.fused.altitude | 0.0,
+                  this.location.fused.eph | 0.0,
+                  this.location.fused.head_motion | 0.0,
+                  this.location.fused.head_vehicle | 0.0,
+                  this.location.fused.head_valid | 0,
+                  this.location.fused.head_precision | 0.0,
+                  this.location.fused.ground_speed | 0.0,
+                  this.location.direction | 0,
+                  this.location.speed | 0.0,
+                  this.location.mileage | 0,
+                  this.location.temperature | 0.0,
+                  this.metrics != null,
+                  this.metrics.health___type___uwb_comm | 0,
+                  this.metrics.health___type___uwb_firmware | 0,
+                  this.metrics.health___type___uwb_config | 0,
+                  this.metrics.health___type___gnss_comm | 0,
+                  this.metrics.health___type___ubx_firmware | 0,
+                  this.metrics.health___type___ubx_config | 0,
+                  this.metrics.health___type___actors_startup | 0,
+                  this.metrics.sntp_updates | 0,
+                  this.metrics.free_heap_bytes | 0,
+                  this.metrics.system_time_seconds | 0.0,
+                  this.metrics.wifi_rssi_dbm | 0.0,
+                  this.metrics.wifi_ap | 0,
+                  this.metrics.gnss_num_sats___system___gps | 0,
+                  this.metrics.gnss_num_sats___system___glonass | 0,
+                  this.metrics.gnss_num_sats___system___beidou | 0,
+                  this.metrics.gnss_num_sats___system___galileo | 0,
+                  this.metrics.gnss_num_sats___system___qzss | 0,
+                  this.metrics.gnss_uart_errors___type___hw_fifo | 0,
+                  this.metrics.gnss_uart_errors___type___buf_full | 0,
+                  this.metrics.gnss_uart_errors___type___char | 0,
+                  this.metrics.gnss_num_sv | 0,
+                  this.metrics.gnss_pga___block___rf1 | 0,
+                  this.metrics.gnss_pga___block___rf2 | 0,
+                  this.metrics.ubx_sensor_fusion_status_enum | 0,
+                  this.metrics.ubx_ref_station_id | 0,
+                  this.metrics.ntrip_is_connected | 0,
+                  this.metrics.ntrip_transfer_bytes___direction___send | 0,
+                  this.metrics.ntrip_transfer_bytes___direction___recv | 0,
+                  this.metrics.lsi_is_connected | 0,
+                  this.metrics.lsi_acks_missed | 0,
+                  this.metrics.ubx_boot_type_enum | 0,
+                  this.metrics.ubx_runtime | 0,
+                  this.metrics.ubx_sensor_fusion_detail___type___wt_init | 0,
+                  this.metrics.ubx_sensor_fusion_detail___type___mnt_alg | 0,
+                  this.metrics.ubx_sensor_fusion_detail___type___ins_init | 0,
+                  this.metrics.ubx_sensor_fusion_detail___type___imu_init | 0,
+                  this.metrics.sensor_fusion_state | 0,
+                  this.metrics.uwb_num_sats | 0,
+                  this.metrics.uwb_sat___type___1_addr | 0,
+                  this.metrics.uwb_sat___type___1_rssi | 0,
+                  this.metrics.uwb_sat___type___1_nlos | 0,
+                  this.metrics.uwb_sat___type___2_addr | 0,
+                  this.metrics.uwb_sat___type___2_rssi | 0,
+                  this.metrics.uwb_sat___type___2_nlos | 0,
+                  this.metrics.uwb_sat___type___3_addr | 0,
+                  this.metrics.uwb_sat___type___3_rssi | 0,
+                  this.metrics.uwb_sat___type___3_nlos | 0,
+                  this.metrics.uwb_sat___type___4_addr | 0,
+                  this.metrics.uwb_sat___type___4_rssi | 0,
+                  this.metrics.uwb_sat___type___4_nlos | 0,
+                  this.metrics.uwb_sat___type___5_addr | 0,
+                  this.metrics.uwb_sat___type___5_rssi | 0,
+                  this.metrics.uwb_sat___type___5_nlos | 0,
+                  this.metrics.uwb_sat___type___6_addr | 0,
+                  this.metrics.uwb_sat___type___6_rssi | 0,
+                  this.metrics.uwb_sat___type___6_nlos | 0,
+                  this.metrics.cpu_load_percent___cpu___0 | 0,
+                  this.metrics.cpu_load_percent___cpu___1 | 0,
+                  this.metrics.uptime_seconds | 0,
+                  this.metrics.sleep_manager_state | 0,
+                  this.metrics.last_power_cut_unix_seconds | 0,
+                  this.metrics.mileage_mm | 0,
+                  this.metrics.reset_count___type___poweron | 0,
+                  this.metrics.reset_count___type___software | 0,
+                  this.metrics.reset_count___type___panic | 0,
+                  this.metrics.reset_count___type___wd | 0,
+                  this.metrics.reset_count___type___brownout | 0,
+                  this.metrics.reset_count___type___pwrglitch | 0,
+                  this.metrics.reset_count___type___unknown | 0,
+                  this.metrics.uwb_tacho_speed | 0.0,
+                  this.metrics.uwb_pan_id | 0
+                ]
+
 
       # Forward data to prometheus
       - drop_on:
