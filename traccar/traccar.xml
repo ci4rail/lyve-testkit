@@ -19,7 +19,7 @@
     -->
 
     <entry key='database.driver'>org.postgresql.Driver</entry>
-    <entry key='database.url'>jdbc:postgresql://postgresdb/db</entry>
+    <entry key='database.url'>jdbc:postgresql://postgresdb/traccardb</entry>
     <entry key='database.user'>user</entry>
     <entry key='database.password'>password</entry>
     <entry key='filter.enable'>true</entry>
