@@ -102,6 +102,17 @@ def chunk_time_range_ms(chunk: Dict[str, Any]) -> tuple[Optional[int], Optional[
     return min(timestamps), max(timestamps)
 
 
+def sanitize_filename_component(value: str) -> str:
+    allowed = {"-", "_"}
+    return "".join(ch if ch.isalnum() or ch in allowed else "_" for ch in value)
+
+
+def write_chunk_file(path: Path, chunk: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(chunk, f, indent=2)
+
+
 def build_position(entry: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     tracelet_id = entry.get("tracelet_id")
     if not tracelet_id:
@@ -223,6 +234,11 @@ def main() -> None:
             "if no timezone is given, local time is assumed. Also accepts epoch ms."
         ),
     )
+    parser.add_argument(
+        "--split-by-vehicle",
+        action="store_true",
+        help="Write one output file per vehicle, preserving per-vehicle chronological order.",
+    )
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -249,17 +265,29 @@ def main() -> None:
         stem = output_path.stem
         parent = output_path.parent
 
-        if len(chunks) == 1 and not force_time_suffix:
-            with output_path.open("w", encoding="utf-8") as f:
-                json.dump(chunks[0], f, indent=2)
+        if args.split_by_vehicle:
+            for chunk in chunks:
+                chunk_positions = chunk.get("positions") or {}
+                for tracelet_id, pos_list in chunk_positions.items():
+                    vehicle_chunk = {
+                        "header": chunk["header"],
+                        "positions": {tracelet_id: pos_list},
+                    }
+                    chunk_start_ms, chunk_end_ms = chunk_time_range_ms(vehicle_chunk)
+                    start_s = epoch_ms_to_filename_local(chunk_start_ms)
+                    end_s = epoch_ms_to_filename_local(chunk_end_ms)
+                    vehicle_id = sanitize_filename_component(tracelet_id)
+                    part_path = parent / f"{stem}_{vehicle_id}_{start_s}-{end_s}{suffix}"
+                    write_chunk_file(part_path, vehicle_chunk)
+        elif len(chunks) == 1 and not force_time_suffix:
+            write_chunk_file(output_path, chunks[0])
         else:
             for chunk in chunks:
                 chunk_start_ms, chunk_end_ms = chunk_time_range_ms(chunk)
                 start_s = epoch_ms_to_filename_local(chunk_start_ms)
                 end_s = epoch_ms_to_filename_local(chunk_end_ms)
                 part_path = parent / f"{stem}_{start_s}-{end_s}{suffix}"
-                with part_path.open("w", encoding="utf-8") as f:
-                    json.dump(chunk, f, indent=2)
+                write_chunk_file(part_path, chunk)
     else:
         for idx, chunk in enumerate(chunks):
             if idx:

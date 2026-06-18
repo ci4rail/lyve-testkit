@@ -1,5 +1,4 @@
 - targets:
-  - localhost:9100
-  - localhost:9091
+  - 192.168.24.231:443
   labels:
     job: gatelet
